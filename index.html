@@ -43,7 +43,7 @@
 
         #text {
             text-align: center;
-            font-size: 20px; /* 縮小一般字體 */
+            font-size: 20px;
             line-height: 2.2;
             letter-spacing: 2px;
             opacity: 0;
@@ -58,17 +58,17 @@
         }
 
         #text.title {
-            font-size: 42px; /* 縮小標題字體 */
+            font-size: 42px;
             letter-spacing: 8px;
         }
 
         #text.birthday-title {
-            font-size: 28px; /* 縮小生日標題字體 */
+            font-size: 28px;
             letter-spacing: 4px;
         }
 
         #text.small {
-            font-size: 17px; /* 縮小小字字體 */
+            font-size: 17px;
             line-height: 2.5;
         }
 
@@ -222,20 +222,22 @@
 
 <body>
 
-    <audio id="bgm1" src="audio/lonely.mp3" preload="auto" loop></audio>
-    <audio id="bgm2" src="audio/warm.mp3" preload="auto" loop></audio>
+    <!-- 音樂路徑已對應你的根目錄檔名 -->
+    <audio id="bgm1" src="./bgm1.mp3" preload="auto" loop></audio>
+    <audio id="bgm2" src="./bgm2.mp3" preload="auto" loop></audio>
 
     <div id="lonely"></div>
 
+    <!-- 圖片路徑已對應你的根目錄檔名 -->
     <div id="memories">
-        <div class="photo" id="photo1"><img src="images/1.jpg"></div>
-        <div class="photo" id="photo2"><img src="images/2.jpg"></div>
-        <div class="photo" id="photo3"><img src="images/3.jpg"></div>
-        <div class="photo" id="photo4"><img src="images/4.jpg"></div>
+        <div class="photo" id="photo1"><img src="./photo1.jpg" alt="photo1"></div>
+        <div class="photo" id="photo2"><img src="./photo2.jpg" alt="photo2"></div>
+        <div class="photo" id="photo3"><img src="./photo3.jpg" alt="photo3"></div>
+        <div class="photo" id="photo4"><img src="./photo4.jpg" alt="photo4"></div>
     </div>
 
     <div id="viewer">
-        <img id="viewerImage">
+        <img id="viewerImage" alt="viewer">
     </div>
 
     <div id="screen">
@@ -350,7 +352,6 @@
         text.classList.add("title");
         setTimeout(() => text.classList.add("show"), 100);
 
-        // 改為監聽整個畫面，點擊任何空白處或文字都能觸發（但排除照片與大圖檢視）
         document.body.addEventListener("click", function(event) {
             if (event.target.closest(".photo") || event.target.closest("#viewer")) return;
             if (isAnimating) return;
@@ -386,7 +387,7 @@
 
                 bgm1.pause();
                 bgm2.volume = 0.4;
-                bgm2.play().catch(e => console.log("BGM2 播放被阻擋", e));
+                bgm2.play().catch(e => console.log("Bgm2 播放被阻擋", e));
             }
 
             if (stage === 12) {
