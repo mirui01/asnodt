@@ -37,20 +37,20 @@
             align-items: center;
             padding: 40px;
             cursor: pointer;
-            z-index: 60; /* 確保文字圖層絕對在圖片上方 */
-            pointer-events: none; /* 讓點擊可以穿透空白區域，但內部文字仍可點擊 */
+            z-index: 60;
+            pointer-events: none;
         }
 
         #text {
             text-align: center;
-            font-size: 26px;
-            line-height: 2.5;
-            letter-spacing: 3px;
+            font-size: 20px; /* 縮小一般字體 */
+            line-height: 2.2;
+            letter-spacing: 2px;
             opacity: 0;
             transition: opacity 1.5s ease;
             max-width: 800px;
             white-space: pre-wrap;
-            pointer-events: auto; /* 讓文字本身可以接受點擊（觸發換頁） */
+            pointer-events: auto;
         }
 
         #text.show {
@@ -58,18 +58,18 @@
         }
 
         #text.title {
-            font-size: 58px;
-            letter-spacing: 12px;
+            font-size: 42px; /* 縮小標題字體 */
+            letter-spacing: 8px;
         }
 
         #text.birthday-title {
-            font-size: 38px;
-            letter-spacing: 6px;
+            font-size: 28px; /* 縮小生日標題字體 */
+            letter-spacing: 4px;
         }
 
         #text.small {
-            font-size: 22px;
-            line-height: 2.8;
+            font-size: 17px; /* 縮小小字字體 */
+            line-height: 2.5;
         }
 
         #hint {
@@ -138,7 +138,7 @@
         #memories {
             position: fixed;
             inset: 0;
-            z-index: 40; /* 圖片在文字（60）的下方 */
+            z-index: 40;
             opacity: 0;
             pointer-events: none;
             transition: opacity 1.5s ease;
@@ -162,7 +162,7 @@
             cursor: pointer;
             filter: blur(10px);
             transform: scale(0.95);
-            pointer-events: none; /* 還沒出現前絕對不能被點到 */
+            pointer-events: none;
             transition: opacity 1.8s ease, filter 1.2s ease, transform 0.5s ease;
         }
 
@@ -174,7 +174,7 @@
 
         .photo.show {
             opacity: 0.7;
-            pointer-events: auto; /* 出現後才可以點擊看大圖 */
+            pointer-events: auto;
         }
 
         .photo.clear {
@@ -188,10 +188,10 @@
             transform: scale(1.04) !important;
         }
 
-        #photo1 { width: 270px; left: 7%; top: 17%; transform: rotate(-7deg); }
-        #photo2 { width: 230px; right: 10%; top: 10%; transform: rotate(5deg); }
-        #photo3 { width: 250px; left: 25%; bottom: 8%; transform: rotate(3deg); }
-        #photo4 { width: 280px; right: 22%; bottom: 15%; transform: rotate(-5deg); }
+        #photo1 { width: 230px; left: 7%; top: 17%; transform: rotate(-7deg); }
+        #photo2 { width: 200px; right: 10%; top: 10%; transform: rotate(5deg); }
+        #photo3 { width: 210px; left: 25%; bottom: 8%; transform: rotate(3deg); }
+        #photo4 { width: 240px; right: 22%; bottom: 15%; transform: rotate(-5deg); }
 
         /* 圖片放大檢視 */
         #viewer {
@@ -246,7 +246,6 @@
 
     <script>
         const text = document.getElementById("text");
-        const screen = document.getElementById("screen");
         const lonely = document.getElementById("lonely");
         const memories = document.getElementById("memories");
         const viewer = document.getElementById("viewer");
@@ -341,7 +340,7 @@
 
         function showMemories() {
             memories.classList.add("show");
-            setTimeout(() => document.gtElementById("photo1").classList.add("show"), 400);
+            setTimeout(() => document.getElementById("photo1").classList.add("show"), 400);
             setTimeout(() => document.getElementById("photo2").classList.add("show"), 900);
             setTimeout(() => document.getElementById("photo3").classList.add("show"), 1400);
             setTimeout(() => document.getElementById("photo4").classList.add("show"), 1900);
@@ -351,7 +350,9 @@
         text.classList.add("title");
         setTimeout(() => text.classList.add("show"), 100);
 
-        screen.addEventListener("click", function() {
+        // 改為監聽整個畫面，點擊任何空白處或文字都能觸發（但排除照片與大圖檢視）
+        document.body.addEventListener("click", function(event) {
+            if (event.target.closest(".photo") || event.target.closest("#viewer")) return;
             if (isAnimating) return;
 
             if (!musicStarted) {
@@ -360,7 +361,6 @@
                 musicStarted = true;
             }
 
-            // 如果在平行世界這句（stage 10），第一次點擊讓拍立得變清晰
             if (stage === 10 && !document.getElementById("photo1").classList.contains("clear")) {
                 document.querySelectorAll(".photo").forEach(photo => {
                     photo.classList.add("clear");
