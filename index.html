@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            font-family: serif;
+            cursor: pointer;
+            transition: background 2.5s ease, color 2.5s ease;
+        }
+
+        body.light-theme {
+            background: #fbf9f6;
+            color: #2b2b2b;
+        }
+
+        #screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            cursor: pointer;
+            z-index: 60; /* 確保文字圖層絕對在圖片上方 */
+            pointer-events: none; /* 讓點擊可以穿透空白區域，但內部文字仍可點擊 */
+        }
+
+        #text {
+            text-align: center;
+            font-size: 26px;
+            line-height: 2.5;
+            letter-spacing: 3px;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            max-width: 800px;
+            white-space: pre-wrap;
+            pointer-events: auto; /* 讓文字本身可以接受點擊（觸發換頁） */
+        }
+
+        #text.show {
+            opacity: 1;
+        }
+
+        #text.title {
+            font-size: 58px;
+            letter-spacing: 12px;
+        }
+
+        #text.birthday-title {
+            font-size: 38px;
+            letter-spacing: 6px;
+        }
+
+        #text.small {
+            font-size: 22px;
+            line-height: 2.8;
+        }
+
+        #hint {
+            position: fixed;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 4px;
+            opacity: 0.35;
+            z-index: 70;
+            transition: color 2.5s ease;
+            pointer-events: none;
+        }
+
+        /* 寂しい */
+        #lonely {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        #lonely.show {
+            opacity: 1;
+        }
+
+        #lonely.fade {
+            opacity: 0;
+        }
+
+        .lonely-word {
+            position: absolute;
+            color: #eee;
+            white-space: nowrap;
+            opacity: 0;
+            font-size: 30px;
+            animation: lonelyAppear 0.7s forwards, lonelyFlicker 1s infinite alternate;
+            transition: color 2s ease, text-shadow 2s ease;
+        }
+
+        @keyframes lonelyAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            to {
+                opacity: 0.9;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes lonelyFlicker {
+            from {
+                opacity: 0.25;
+            }
+            to {
+                opacity: 0.9;
+            }
+        }
+
+        /* 拍立得回憶圖片 */
+        #memories {
+            position: fixed;
+            inset: 0;
+            z-index: 40; /* 圖片在文字（60）的下方 */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease;
+        }
+
+        #memories.show {
+            opacity: 1;
+        }
+
+        #memories.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .photo {
+            position: absolute;
+            padding: 8px;
+            background: #fff;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
+            opacity: 0;
+            cursor: pointer;
+            filter: blur(10px);
+            transform: scale(0.95);
+            pointer-events: none; /* 還沒出現前絕對不能被點到 */
+            transition: opacity 1.8s ease, filter 1.2s ease, transform 0.5s ease;
+        }
+
+        .photo img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .photo.show {
+            opacity: 0.7;
+            pointer-events: auto; /* 出現後才可以點擊看大圖 */
+        }
+
+        .photo.clear {
+            filter: blur(0px) !important;
+            opacity: 1 !important;
+        }
+
+        .photo:hover {
+            opacity: 1 !important;
+            filter: blur(0px) !important;
+            transform: scale(1.04) !important;
+        }
+
+        #photo1 { width: 270px; left: 7%; top: 17%; transform: rotate(-7deg); }
+        #photo2 { width: 230px; right: 10%; top: 10%; transform: rotate(5deg); }
+        #photo3 { width: 250px; left: 25%; bottom: 8%; transform: rotate(3deg); }
+        #photo4 { width: 280px; right: 22%; bottom: 15%; transform: rotate(-5deg); }
+
+        /* 圖片放大檢視 */
+        #viewer {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        #viewer.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #viewer img {
+            max-width: 85%;
+            max-height: 85%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="bgm1" src="audio/lonely.mp3" preload="auto" loop></audio>
+    <audio id="bgm2" src="audio/warm.mp3" preload="auto" loop></audio>
+
+    <div id="lonely"></div>
+
+    <div id="memories">
+        <div class="photo" id="photo1"><img src="images/1.jpg"></div>
+        <div class="photo" id="photo2"><img src="images/2.jpg"></div>
+        <div class="photo" id="photo3"><img src="images/3.jpg"></div>
+        <div class="photo" id="photo4"><img src="images/4.jpg"></div>
+    </div>
+
+    <div id="viewer">
+        <img id="viewerImage">
+    </div>
+
+    <div id="screen">
+        <div id="text"></div>
+    </div>
+
+    <div id="hint">TOUCH</div>
+
+    <script>
+        const text = document.getElementById("text");
+        const screen = document.getElementById("screen");
+        const lonely = document.getElementById("lonely");
+        const memories = document.getElementById("memories");
+        const viewer = document.getElementById("viewer");
+        const viewerImage = document.getElementById("viewerImage");
+        
+        const bgm1 = document.getElementById("bgm1");
+        const bgm2 = document.getElementById("bgm2");
+
+        let stage = 0;
+        let musicStarted = false;
+        let isAnimating = false;
+
+        const scenes = [
+            { text: "F", type: "title" },
+            { text: "FEAR.", type: "title" },
+            { text: "每個人都有感到恐懼的事物。", type: "normal" },
+            { text: "你呢？", type: "normal" },
+            { text: "吾⋯⋯害怕疼痛和痛苦。", type: "normal" },
+            { text: "或許也害怕寂寞。", type: "normal" },
+            { text: "在地獄的時候總會感到⋯⋯該說是孤獨嗎？\n\n但吾本應早已習慣這種感覺。", type: "small" },
+            { text: "或者準確的說，\n\n不能見到你的日子有些無趣。", type: "normal" },
+            { text: "————", type: "normal" },
+            { text: "吾的腦中偶爾會出現一些從未發生過的畫面。", type: "normal" },
+            { text: "你相信平行世界嗎？", type: "parallel" },
+            { text: "如果真的有這樣的世界，能擁有沒有病痛的身體、跟你做一些毫無意義的事、去從未到過的地方，有些令人嚮往。", type: "small" },
+            { text: "你以前問過吾害怕未知嗎？\n\n如果是這樣的未知，貌似很不錯。", type: "small" },
+            { text: "這份情緒讓吾無所適從，吾變得奇怪了嗎？", type: "normal" },
+            { text: "今天是屬於你的重要日子，18歲生日快樂。", type: "birthday" },
+            { text: "希望你健康平安、一切順遂，聽說你在4月有一場重要的任務？\n\n如果是你一定沒問題的。\n\n——— From your best friend ——— As•Nodt", type: "small" }
+        ];
+
+        function showScene() {
+            isAnimating = true;
+            text.classList.remove("show");
+
+            setTimeout(function() {
+                text.innerText = scenes[stage].text;
+                text.className = "";
+
+                if (scenes[stage].type === "title") {
+                    text.classList.add("title");
+                }
+                if (scenes[stage].type === "birthday") {
+                    text.classList.add("birthday-title");
+                }
+                if (scenes[stage].type === "small") {
+                    text.classList.add("small");
+                }
+
+                text.classList.add("show");
+
+                setTimeout(function() {
+                    isAnimating = false;
+                }, 500);
+            }, 700);
+        }
+
+        function createLonely() {
+            lonely.innerHTML = "";
+            lonely.classList.remove("fade");
+            lonely.classList.add("show");
+
+            addWords(4);
+            setTimeout(() => addWords(10), 500);
+            setTimeout(() => addWords(20), 1000);
+            setTimeout(() => addWords(35), 1500);
+            setTimeout(() => addWords(50), 2000);
+            setTimeout(function() {
+                addWords(60);
+                document.querySelectorAll(".lonely-word").forEach(word => {
+                    word.style.color = "#8b0000";
+                    word.style.textShadow = "0 0 12px rgba(139,0,0,0.7)";
+                });
+            }, 2500);
+
+            setTimeout(() => lonely.classList.add("fade"), 4300);
+        }
+
+        function addWords(amount) {
+            for (let i = 0; i < amount; i++) {
+                const word = document.createElement("div");
+                word.className = "lonely-word";
+                word.innerText = "寂しい";
+                word.style.left = Math.random() * 100 + "vw";
+                word.style.top = Math.random() * 100 + "vh";
+                word.style.fontSize = 18 + Math.random() * 55 + "px";
+                word.style.transform = "rotate(" + (Math.random() * 50 - 25) + "deg)";
+                word.style.animationDelay = Math.random() * 0.8 + "s";
+                lonely.appendChild(word);
+            }
+        }
+
+        function showMemories() {
+            memories.classList.add("show");
+            setTimeout(() => document.gtElementById("photo1").classList.add("show"), 400);
+            setTimeout(() => document.getElementById("photo2").classList.add("show"), 900);
+            setTimeout(() => document.getElementById("photo3").classList.add("show"), 1400);
+            setTimeout(() => document.getElementById("photo4").classList.add("show"), 1900);
+        }
+
+        text.innerText = scenes[0].text;
+        text.classList.add("title");
+        setTimeout(() => text.classList.add("show"), 100);
+
+        screen.addEventListener("click", function() {
+            if (isAnimating) return;
+
+            if (!musicStarted) {
+                bgm1.volume = 0.4;
+                bgm1.play().catch(e => console.log("BGM1 播放被阻擋", e));
+                musicStarted = true;
+            }
+
+            // 如果在平行世界這句（stage 10），第一次點擊讓拍立得變清晰
+            if (stage === 10 && !document.getElementById("photo1").classList.contains("clear")) {
+                document.querySelectorAll(".photo").forEach(photo => {
+                    photo.classList.add("clear");
+                });
+                return;
+            }
+
+            if (stage >= scenes.length - 1) {
+                return;
+            }
+
+            stage++;
+
+            if (stage === 3) {
+                setTimeout(function() {
+                    createLonely();
+                }, 1500);
+            }
+
+            if (stage === 10) {
+                document.body.classList.add("light-theme");
+                showMemories();
+
+                bgm1.pause();
+                bgm2.volume = 0.4;
+                bgm2.play().catch(e => console.log("BGM2 播放被阻擋", e));
+            }
+
+            if (stage === 12) {
+                memories.classList.add("fade-out");
+            }
+
+            showScene();
+        });
+
+        document.querySelectorAll(".photo").forEach(function(photo) {
+            photo.addEventListener("click", function(event) {
+                event.stopPropagation();
+                viewerImage.src = photo.querySelector("img").src;
+                viewer.classList.add("show");
+            });
+        });
+
+        viewer.addEventListener("click", function() {
+            viewer.classList.remove("show");
+        });
+    </script>
+</body>
+</html>
