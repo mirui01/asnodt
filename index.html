@@ -160,7 +160,7 @@
 
         .photo {
             position: absolute;
-            padding: 6px 6px 18px 6px;
+            padding: 8px 8px 22px 8px;
             background: #fff;
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
             opacity: 0;
@@ -193,11 +193,11 @@
             transform: scale(1.04) !important;
         }
 
-        /* 桌機版初始位置：將照片往四周分散 */
-        #photo1 { width: 190px; left: 5%; top: 12%; transform: rotate(-7deg); }
-        #photo2 { width: 170px; right: 6%; top: 10%; transform: rotate(5deg); }
-        #photo3 { width: 180px; left: 8%; bottom: 8%; transform: rotate(3deg); }
-        #photo4 { width: 200px; right: 8%; bottom: 10%; transform: rotate(-5deg); }
+        /* 桌機版位置：適度交錯與遮擋 */
+        #photo1 { width: 230px; left: 8%; top: 12%; transform: rotate(-8deg); z-index: 1; }
+        #photo2 { width: 210px; right: 10%; top: 8%; transform: rotate(6deg); z-index: 2; }
+        #photo3 { width: 220px; left: 18%; bottom: 10%; transform: rotate(4deg); z-index: 3; }
+        #photo4 { width: 240px; right: 18%; bottom: 12%; transform: rotate(-6deg); z-index: 4; }
 
         /* 圖片放大檢視 */
         #viewer {
@@ -234,15 +234,15 @@
                 font-size: 15px !important;
                 line-height: 1.8;
                 letter-spacing: 1px;
-                max-width: 92vw;
-                background: rgba(251, 249, 246, 0.85); /* 淺色模式下的手機半透明底框 */
-                padding: 22px 16px;
-                border-radius: 12px;
+                max-width: 90vw;
+                background: rgba(251, 249, 246, 0.88); /* 淺色模式手機底框，保護閱讀 */
+                padding: 24px 18px;
+                border-radius: 14px;
                 box-shadow: 0 4px 20px rgba(0,0,0,0.06);
             }
 
             body:not(.light-theme) #text {
-                background: rgba(0, 0, 0, 0.85); /* 暗黑模式下的手機半透明底框 */
+                background: rgba(0, 0, 0, 0.88); /* 暗黑模式手機底框 */
             }
 
             #text.title {
@@ -259,11 +259,11 @@
                 line-height: 2.1;
             }
 
-            /* 手機版縮小照片並配置在畫面四個角落 */
-            #photo1 { width: 95px; left: 3%; top: 4%; transform: rotate(-8deg); }
-            #photo2 { width: 90px; right: 3%; top: 5%; transform: rotate(6deg); }
-            #photo3 { width: 95px; left: 3%; bottom: 6%; transform: rotate(4deg); }
-            #photo4 { width: 100px; right: 3%; bottom: 7%; transform: rotate(-6deg); }
+            /* 手機版：放大照片尺寸，並透過重疊交錯（部分遮擋）營造拍立得散落感 */
+            #photo1 { width: 145px; left: 5%; top: 12%; transform: rotate(-10deg); z-index: 1; }
+            #photo2 { width: 135px; right: 5%; top: 8%; transform: rotate(8deg); z-index: 2; }
+            #photo3 { width: 140px; left: 12%; bottom: 10%; transform: rotate(5deg); z-index: 3; }
+            #photo4 { width: 150px; right: 12%; bottom: 8%; transform: rotate(-7deg); z-index: 4; }
         }
     </style>
 </head>
@@ -322,7 +322,7 @@
             { text: "你以前問過吾害怕未知嗎？\n\n如果是這樣的未知，貌似很不錯。", type: "small" },
     
             { text: "今天是屬於你的重要日子，\n\n18歲生日快樂。", type: "birthday" },
-            { text: "希望你健康平安、一切順遂，\n\n聽說你在4月有一場重要的任務？\n\n如果是你一定沒問題的。\n\n——— From your best friend ——— As•Nodt", type: "small" }
+            { text: "希望你健康平安、一切順遂，\n\n聽說你在4月有一場重要的任務？\n\n如果是你一定沒問題的。\n\n From your best friend ——— As•Nodt", type: "small" }
         ];
 
         function showScene() {
