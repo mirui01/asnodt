@@ -51,6 +51,11 @@
             max-width: 800px;
             white-space: pre-wrap;
             pointer-events: auto;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        body.light-theme #text {
+            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.9);
         }
 
         #text.show {
@@ -138,7 +143,7 @@
         #memories {
             position: fixed;
             inset: 0;
-            z-index: 40;
+            z-index: 35;
             opacity: 0;
             pointer-events: none;
             transition: opacity 1.5s ease;
@@ -155,7 +160,7 @@
 
         .photo {
             position: absolute;
-            padding: 8px;
+            padding: 6px 6px 18px 6px;
             background: #fff;
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.18);
             opacity: 0;
@@ -173,7 +178,7 @@
         }
 
         .photo.show {
-            opacity: 0.7;
+            opacity: 0.75;
             pointer-events: auto;
         }
 
@@ -188,10 +193,11 @@
             transform: scale(1.04) !important;
         }
 
-        #photo1 { width: 230px; left: 7%; top: 17%; transform: rotate(-7deg); }
-        #photo2 { width: 200px; right: 10%; top: 10%; transform: rotate(5deg); }
-        #photo3 { width: 210px; left: 25%; bottom: 8%; transform: rotate(3deg); }
-        #photo4 { width: 240px; right: 22%; bottom: 15%; transform: rotate(-5deg); }
+        /* 桌機版初始位置：將照片往四周分散 */
+        #photo1 { width: 190px; left: 5%; top: 12%; transform: rotate(-7deg); }
+        #photo2 { width: 170px; right: 6%; top: 10%; transform: rotate(5deg); }
+        #photo3 { width: 180px; left: 8%; bottom: 8%; transform: rotate(3deg); }
+        #photo4 { width: 200px; right: 8%; bottom: 10%; transform: rotate(-5deg); }
 
         /* 圖片放大檢視 */
         #viewer {
@@ -217,18 +223,58 @@
             max-height: 85%;
             object-fit: contain;
         }
+
+        /* ==================== 手機版響應式優化 (RWD) ==================== */
+        @media screen and (max-width: 768px) {
+            #screen {
+                padding: 15px;
+            }
+
+            #text {
+                font-size: 15px !important;
+                line-height: 1.8;
+                letter-spacing: 1px;
+                max-width: 92vw;
+                background: rgba(251, 249, 246, 0.85); /* 淺色模式下的手機半透明底框 */
+                padding: 22px 16px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            }
+
+            body:not(.light-theme) #text {
+                background: rgba(0, 0, 0, 0.85); /* 暗黑模式下的手機半透明底框 */
+            }
+
+            #text.title {
+                font-size: 30px !important;
+                letter-spacing: 4px;
+            }
+
+            #text.birthday-title {
+                font-size: 21px !important;
+            }
+
+            #text.small {
+                font-size: 14px !important;
+                line-height: 2.1;
+            }
+
+            /* 手機版縮小照片並配置在畫面四個角落 */
+            #photo1 { width: 95px; left: 3%; top: 4%; transform: rotate(-8deg); }
+            #photo2 { width: 90px; right: 3%; top: 5%; transform: rotate(6deg); }
+            #photo3 { width: 95px; left: 3%; bottom: 6%; transform: rotate(4deg); }
+            #photo4 { width: 100px; right: 3%; bottom: 7%; transform: rotate(-6deg); }
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- 音樂路徑已對應你的根目錄檔名 -->
     <audio id="bgm1" src="./bgm1.mp3" preload="auto" loop></audio>
     <audio id="bgm2" src="./bgm2.mp3" preload="auto" loop></audio>
 
     <div id="lonely"></div>
 
-    <!-- 圖片路徑已對應你的根目錄檔名 -->
     <div id="memories">
         <div class="photo" id="photo1"><img src="./photo1.jpg" alt="photo1"></div>
         <div class="photo" id="photo2"><img src="./photo2.jpg" alt="photo2"></div>
